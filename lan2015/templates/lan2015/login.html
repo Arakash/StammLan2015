@@ -1,0 +1,126 @@
+{% load staticfiles %}
+
+<script src="{% static 'lan2015/js/libs/jquery-2.1.1.js' %}"></script>
+
+<body style="height: 100vh;width:100vw; padding:0; margin:0; overflow:hidden">
+    <div style="height:15%;padding-bottom:5%;padding-top:3%;" class="text">
+      It's comming...
+    </div> 
+
+    <div class="text" style="color: red; height: 30vh">
+        14.06 - 18.06.2015
+    </div>
+
+    <!-- EASTER EGG TIME -->
+    <!-- https://www.youtube.com/watch?v=Hv6RbEOlqRo -->
+    <!-- ########################################### -->
+
+    <div class="text Enter" style="height:10%; margin:0; padding:0;" >
+      <a href="main" ondragover="allowDrop(event)" ondrop="drop(event)"><b>ENTER</b></a>
+      <div class="text notyet">
+        not yet...
+      </div>
+      <img src="{% static 'lan2015/images/lankabel.png' %}" style="position:absolute; width:20vw;display:none; min-width:200px;" draggable="true" ondragstart="drag(event)" id="kabelPic"/>
+      <img src="{% static 'lan2015/images/switch.png' %}" style="position:absolute; width:40vw; display:none; min-width:200px;" id="switchPic" ondragover="allowDrop(event)" ondrop="drop(event)"/>
+      <img src="{% static 'lan2015/images/FYOU.png' %}" style="position:absolute; height:600px; display:none" id="SvenPic" />
+  </div>
+
+</body>
+
+<style>
+    body{
+        background-color: black;
+        cursor: default;
+    }
+    .text{
+        color: white;
+        text-align: center;
+        font-size: 10vh;
+    }
+    .Enter>a{
+/*      text-decoration: none;*/
+      color: white;
+      cursor: default;
+    }
+    .Enter>.notyet{
+      opacity: 0;
+      transition: opacity 1s ease-in;
+      text-align: center;
+      font-size: 5vh;
+    }
+    .Enter:hover>.notyet{
+      opacity: 1.0;
+    }
+    .Enter>#kabelPic{
+      position:absolute;
+      right:-300px;
+      top:50vh;
+    }
+    .Enter>#switchPic{
+      left:-500px;
+      top:50vh;
+    }
+    .Enter>#SvenPic{
+      bottom:-500px;
+      z-index:-1;
+    }
+    .Enter:hover>img{
+    }
+    .Enter>#kabelPic.show{
+      transition: 2s;
+      right:0;
+    }
+    .Enter>#switchPic.show{
+      transition: 2s;
+      left:-90px;
+    }
+
+</style>
+
+<script>
+
+$(document).keyup(function(event){
+    if(event.which == 13)
+    $("body").append("<p style='position:absolute;color:red; font-size: 32px'> HAHA SMARTASS </p>");
+});
+var clickCounter = 0;
+$(".Enter").click(function(){
+    clickCounter++;
+    if(clickCounter==1){
+        $(".Enter>#kabelPic").show();
+        $(".Enter>#kabelPic").addClass("show");
+    }
+    else if(clickCounter==2){
+        $(".Enter>#switchPic").show();
+        $(".Enter>#switchPic").addClass("show");
+    }
+    else if(clickCounter%10 == 0){
+        $(".Enter>#SvenPic").show();
+        $(".Enter>#SvenPic").animate({bottom: "-180px"},5000,function(){
+          $(this).animate({bottom:"-500px"},5000);
+          });
+        //$(".Enter>#SvenPic").addClass("show");
+    }
+});
+$(".Enter>a").click(function(e){
+    console.log("preventing default");
+    e.preventDefault();
+});
+
+function drag(ev){
+    ev.dataTransfer.setData("login", "true");
+}
+
+function drop(ev){
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("login");
+    console.log("data: " + data);
+    if(data)
+      $(".Enter").append("<a href='main' style='font-size: 4vw; color:blue;'> nice thinking! You pass!</a>");
+}
+
+function allowDrop(event){
+    event.preventDefault();
+}
+
+</script>
