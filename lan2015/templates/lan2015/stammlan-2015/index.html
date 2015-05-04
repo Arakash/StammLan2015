@@ -434,7 +434,7 @@ return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
 
 $.ajaxSetup({
 beforeSend: function(xhr, settings) {
-if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+if (!csrfSafeMethod(settings.type)){//} && sameOrigin(settings.url)) {
 // Send the token to same-origin, relative URLs only.
 // Send the token only if the method warrants CSRF protection
 // Using the CSRFToken value acquired earlier
