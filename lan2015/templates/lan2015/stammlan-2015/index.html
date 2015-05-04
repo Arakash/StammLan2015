@@ -1,0 +1,446 @@
+﻿<!doctype html>
+<html>
+{% load staticfiles %}
+
+<style>
+@font-face {
+    font-family: myFont;
+    src: url({% static 'lan2015/jaapokki-regular.woff' %});
+}
+</style>
+
+<head>
+    <title>StammLan-Sample</title>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <!-- global library imports -->
+    <script src="{% static 'lan2015/main/math.min.js' %}"></script>
+    <script src="{% static 'lan2015/main/FFT.js' %}"></script>
+    <script src="{% static 'lan2015/main/audio-system.js' %}"></script>
+    <script src="{% static 'lan2015/main/vis.js' %}"></script>
+    <script src="{% static 'lan2015/main/jquery-2.1.1.js' %}"></script>
+    <script src="{% static 'lan2015/main/spotlight.js' %}"></script>
+    <script src="{% static 'lan2015/main/index.js' %}"></script>
+    <script src="{% static 'lan2015/main/libs/SeamlessLoop.js' %}"></script>
+
+    <link rel="stylesheet" href="{% static 'lan2015/main/index.css' %}"/>
+
+    <style>
+        html, body {
+            height: 100vh;
+            margin: 0;
+            /*background-color: #E5E5E5;*/
+            font-family: sans-serif;
+            background-size: cover;
+            overflow: hidden;
+        }
+/*
+        body::before{
+          content: ' ';
+          position:absolute;
+          display: block;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background-image: url("royfreeImg.jpg");
+          z-index: 0;
+        }*/
+
+        .absolute {
+            position: absolute;
+        }
+
+        .neon {
+            /*text-shadow: 1px 1px 10px rgb(240, 0, 0);*/
+          font-size: 48px;
+          /*transition: font-size 0.05s;*/
+          color: greenyellow;
+          width:100%;
+          text-align: center;
+          text-shadow: 0 1px 0 #ccc,
+          0 2px 0 #c9c9c9,
+          0 3px 0 #bbb,
+          0 4px 0 #b9b9b9,
+          0 5px 0 #aaa,
+          0 6px 1px rgba(0,0,0,.1),
+          0 0 5px rgba(0,0,0,.1),
+          0 1px 3px rgba(0,0,0,.3),
+          0 3px 5px rgba(0,0,0,.2),
+          0 5px 10px rgba(0,0,0,.25),
+          0 10px 10px rgba(0,0,0,.2),
+          0 20px 20px rgba(0,0,0,.15),
+          0 0 5px black;
+        }
+
+        .top {
+            margin-top: 5em;
+        }
+    </style>
+</head>
+
+<body touch-action="auto">
+    <!-- AUDIO MUTE BUTTON SECTION -->
+<input type="button" id="muteButton" class="flatButton audioControl" value="mute Audio">
+
+<div class="audioControl playButton" style="width: 150px" hidden>
+    <input type="button" id="playButton" class="flatButton" value="resume Audio" style="width:100%">
+    <input id="rememberBox" type="checkbox" value="remember_choice"> remember mute
+</div>
+    <!-- AUDIO MUTE BUTTON END -->
+
+    <!-- FIXED HEADER -->
+<div style="position: relative; text-align: center; width: 100vw; z-index: 10">
+
+  <h1 id="neon" class="absolute neon">S T A M M - L A N <br> 2015</h1>
+  <h5> 12.06. - 14.06.2015 </h5>
+</div>
+
+    <!-- FIXED REGISTER BUTTON -->
+<div class="register">
+    <input id="registerButton" type="button" class="flatButton" value="Anmeldung zur LAN HIER">
+</div>
+
+<div class="startPage">
+    <input class="flatButton" type="button" value="Enter" id="enterButton" style="z-index: 5"/>
+
+</div>
+
+<div class="mainPage">
+    <div style="z-index: 1; height: 250px; width: 100vw">
+      <canvas class="top" id="visCanvas" width="1300" height="160">
+      </canvas>
+
+      <audio id="audioElement" style="display: block;">
+          <source src="{% static 'lan2015/main/end.ogg' %}" type="audio/ogg">
+      </audio>
+    </div>
+      <canvas id="spotlightTest" width="600" height="300" style="z-index:-1; position: absolute; top:0"></canvas>
+
+    <div class="frontPage">
+  <!-- Box für Announcements! -->
+    <div id="announcementBox" class="boxlet">
+      <h2>Announcements</h2>
+
+      {% if announcements %}
+      {% for an in announcements %}
+      <div class="announcement">
+        <h3> {{ an.header }}</h3>
+        <span class="commentDate"> {{ an.pub_date|date:"d.m.y" }}</span>
+        <p> {{ an.text }}</p>
+      </div>
+      {% endfor %}
+      {% else %}
+      <p> No Announcements to show :( </p>
+      {% endif %}
+    </div>
+
+  <!-- Box für Comments! -->
+    <div id="commentBox" class="boxlet">
+      <div class="commentShow">
+      </div>
+
+      <div class="inputBox" class="boxlet">
+          <input type="text" id="nameInput" placeholder="Name hier!">
+          <input type="color" id="colorInput" value="#11FF55">
+          <textarea id="commentInput" placeholder="Kommentare hier!"></textarea>
+          <input id="commentSendButton" type="button" value="send" class="flatButton">
+      </div>
+    </div>
+
+  <!-- Box für F.A.Q -->
+    <div id="faqBox" class="boxlet">
+      <div class="faq">
+        <h3>Wann? Wie lange?</h3>
+        <p>start ist am <b>12.06.2015</b>, ab <b>15:00</b> Uhr. Lan endet, sobald niemand mehr im Haus ist</p>
+      </div>
+      <div class="faq">
+        <h3>Wo?</h3>
+        <p>Bei mir.</p>
+      </div>
+      <div class="faq">
+        <h3>kann ich auch kommen?</h3>
+        <p>Kenn ich dich mit Namen? Dann  auf jeden Fall :). Ansonsten mail/whatsapp/Telegram an mich</p>
+      </div>
+      <div class="faq">
+        <h3>Hier steht ja nirgends dein Name?</h3>
+        <p>das ist auch so gewollt. Wenn du nicht weißt wer ich bin, sind die chancen groß, dass du bei der StammLan nichts zu suchen hast.</p>
+      </div>
+    </div>
+    </div>
+  <p>Music: Tobu - My Own Paradise</p>
+</div>
+
+<div class="mediaPage">
+    <div id="headlineSpacer">
+    </div>
+    <input id="subscribeButton" type="button" class="flatButton" value="+ anmelden" style="width:26vw; margin-left: 38vw; margin-bottom:2vh"/>
+
+    <div id="subscribeForm" hidden>
+        <form type="post">
+            <fieldset>
+                <legend>Name:</legend>
+                <input type="text" id="nameInput2" class="flatInput" placeholder="Max Mustermann"/>
+            </fieldset>
+            <fieldset>
+                <legend>Switch:</legend>
+                <input type="text" id="switchInput" placeholder="8port 100Mbit" class="flatInput"/>
+            </fieldset>
+            <fieldset>
+                <legend>Tisch:</legend>
+                <input type="text" id="tischInput" class="flatInput"/>
+            </fieldset>
+            <div>
+                <input id="formSubmitButton" type="submit" value="OK" class="flatButton"/>
+            </div>
+        </form>
+    </div>
+
+    <div class="subscribers">
+        <table>
+            <tr>
+                <td><b> Name  </b></td>
+                <td><b> switch</b></td>
+                <td><b> Stuhl </b></td>
+                <td><b> Tisch </b></td>
+            </tr>
+
+            <tr>
+                <td> Max Mustermann </td>
+                <td> 5-port Gigabit </td>
+                <td> - </td>
+                <td> Bierbank </td>
+            </tr>
+
+            <tr>
+                <td> The Dude </td>
+                <td> 16-port 100Mb </td>
+                <td> 1 Sessel </td>
+                <td> - </td>
+            </tr>
+            <tr>
+                <td> The Dude </td>
+                <td> 16-port 100Mb </td>
+                <td> 1 Sessel </td>
+                <td> - </td>
+            </tr>
+            <tr>
+                <td> The Dude </td>
+                <td> 16-port 100Mb </td>
+                <td> 1 Sessel </td>
+                <td> - </td>
+            </tr>
+            <tr>
+                <td> The Dude </td>
+                <td> 16-port 100Mb </td>
+                <td> 1 Sessel </td>
+                <td> - </td>
+            </tr>
+            <tr>
+                <td> The Dude </td>
+                <td> 16-port 100Mb </td>
+                <td> 1 Sessel </td>
+                <td> - </td>
+            </tr>
+            <tr>
+                <td> The Dude </td>
+                <td> 16-port 100Mb </td>
+                <td> 1 Sessel </td>
+                <td> - </td>
+            </tr>
+            <tr>
+                <td> The Dude </td>
+                <td> 16-port 100Mb </td>
+                <td> 1 Sessel </td>
+                <td> - </td>
+            </tr>
+            <tr>
+                <td> The Dude </td>
+                <td> 16-port 100Mb </td>
+                <td> 1 Sessel </td>
+                <td> - </td>
+            </tr>
+            <tr>
+                <td> The Dude </td>
+                <td> 16-port 100Mb </td>
+                <td> 1 Sessel </td>
+                <td> - </td>
+            </tr>
+            <tr>
+                <td> The Dude </td>
+                <td> 16-port 100Mb </td>
+                <td> 1 Sessel </td>
+                <td> - </td>
+            </tr>
+            <tr>
+                <td> The Dude </td>
+                <td> 16-port 100Mb </td>
+                <td> 1 Sessel </td>
+                <td> - </td>
+            </tr>
+
+        </table>
+    </div>
+
+    <div class="ytBox" style="margin:15px">
+        <iframe width="360" height="215" src="https://www.youtube.com/embed/pH7tqu5r1QE" frameborder="0" allowfullscreen></iframe>
+        <iframe width="360" height="215" src="https://www.youtube.com/embed/KkVxzvFxwqA" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <input type="button" id="closeMedia" class="flatButton" value="close"/>
+</div>
+
+</body>
+
+<script>
+
+  var lightsOn = false;
+
+  $(function(){
+    {% if comments %}
+        {% for c in comments %}
+            addComment(".commentShow", "{{ c.userName }}", "{{ c.text }}", "{{ c.pub_date|date:'d-m-y H:i' }}");
+        {% endfor %}
+    {% endif %}
+
+
+    var spotlightcanvas = document.getElementById('spotlightTest');
+    spotlightcanvas.width = window.innerWidth;
+    spotlightcanvas.height= window.innerHeight;
+    console.log("canvas width: " + spotlightcanvas.width);
+
+    // initializer
+    audioSystem = new stammlan.AudioSystem();
+    audioSystem.setup(document.getElementById("audioElement"));
+
+    vis = new stammlan.Vis(document.getElementById("visCanvas"));
+
+    var viscanvas = document.getElementById('visCanvas');
+    viscanvas.width = window.innerWidth;
+
+    audioSystem.addListener(function (bars) {
+
+      opacity = (bars[0] - 14) / 10;
+      if (opacity < 0)
+        opacity = 0.0
+      if (opacity > 1.0)
+        opacity = 1.0
+
+      /* document.getElementById("neon").setAttribute("style",
+       "opacity: " + opacity);*/
+      /*$("#neon").css("text-shadow", opacity*10+"px "+opacity*10+"px 10px rgb(240, 0, 0)");*/
+      $("#neon").css("transform", "scale("+Number(1+0.5*opacity)+","+ Number(1+0.5*opacity)+ ")");
+
+      //Logic for the Spotlight Effect.
+  /*    if(opacity>0.70 && !lightsOn){
+        lightsOn=true;
+        var spotlightcanvas = document.getElementById('spotlightTest');
+        for(var i = 0; i < 5; i++){
+          var red = Number(Math.random()*250).toFixed(0);
+          var green = Number(Math.random()*250).toFixed(0);
+          var blue = Number(Math.random()*250).toFixed(0);
+          spotlight(spotlightcanvas, {x:Math.random()*spotlightcanvas.width,y: Math.random()*spotlightcanvas.height},
+            {red: red, blue: blue, green: green});
+        }
+
+        //$("body").css("background-image", "url("+spotlightcanvas.toDataURL()+")");
+        window.setTimeout(function(){
+          var canvas = document.getElementById('spotlightTest');
+          var context = canvas.getContext('2d');
+          context.clearRect(0,0,canvas.width, canvas.height);
+          lightsOn= false;
+        }, 400);
+      }*/
+    });
+    audioSystem.addListener(vis.update.bind(vis));
+    audioSystem.startVis();
+
+  });
+
+  function initbpmInfluence(bpm, funct){
+    /*
+     Hip Hop/Rap/Trip-Hop 	60–110 BPM
+     Acid Jazz 	80–126 BPM
+     Tribal House 	120–128 BPM
+     House/Garage/Disco-House 	120–135 BPM
+     Dubstep/Future Pop 	135–145 BPM
+     Trance/Hard House/Hands up/Hardstyle 	130–155 BPM
+     Jungle/Drum and Bass/Happy Hardcore/Hardcore 	160–190 BPM
+     Hardcore Techno/Gabber 	160+ BPM
+     */
+    var ms = (1/bpm)*60*1000;
+    console.log("ms: " + ms);
+    /*window.setInterval(function(){
+      console.log("initbpmInfluence");
+      if( $("#neon").css("font-size") ==  "40px")
+        $("#neon").css("font-size","72px");
+      else
+        $("#neon").css("font-size", "80px");
+    }, ms);*/
+  }
+
+  function addComment(parentSelector, name, text, date){
+      $(parentSelector).append(
+      '<div class="comment">'+
+        '<h5>'+name+'</h5>'+
+        '<span class="commentDate">'+date+'</span>'+
+        text +
+      '</div>'
+  );
+  }
+</script>
+
+</html>
+
+<!-- this script snippet ensures, gives our sets up our AJAX up securely with csrf tokens n stuff-->
+<script>
+// This function gets cookie with a given name
+function getCookie(name) {
+var cookieValue = null;
+if (document.cookie && document.cookie != '') {
+var cookies = document.cookie.split(';');
+for (var i = 0; i < cookies.length; i++) {
+var cookie = jQuery.trim(cookies[i]);
+// Does this cookie string begin with the name we want?
+if (cookie.substring(0, name.length + 1) == (name + '=')) {
+cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+break;
+}
+}
+}
+return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+
+/*
+The functions below will create a header with csrftoken
+*/
+
+function csrfSafeMethod(method) {
+// these HTTP methods do not require CSRF protection
+return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+function sameOrigin(url) {
+// test that a given url is a same-origin URL
+// url could be relative or scheme relative or absolute
+var host = document.location.host; // host + port
+var protocol = document.location.protocol;
+var sr_origin = '//' + host;
+var origin = protocol + sr_origin;
+// Allow absolute or scheme relative URLs to same origin
+return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+(url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+// or any other URL that isn't scheme relative or absolute i.e relative.
+!(/^(\/\/|http:|https:).*/.test(url));
+}
+
+$.ajaxSetup({
+beforeSend: function(xhr, settings) {
+if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+// Send the token to same-origin, relative URLs only.
+// Send the token only if the method warrants CSRF protection
+// Using the CSRFToken value acquired earlier
+xhr.setRequestHeader("X-CSRFToken", csrftoken);
+}
+}
+});
+</script>
