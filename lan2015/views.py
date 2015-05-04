@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from lan2015.models import Announcement
 from lan2015.models import Comment
 
-
+from django.views.decorators.csrf import csrf_exempt
 
 import json
 
@@ -16,6 +16,7 @@ def index(request):
     return render(request, 'lan2015/login.html')
 
 
+@csrf_exempt
 def main(request):
     announcements = Announcement.objects.order_by('pub_date');
     comments = Comment.objects.order_by('pub_date');
@@ -23,6 +24,7 @@ def main(request):
     return render(request, 'lan2015/stammlan-2015/index.html', context)
 
 
+@csrf_exempt
 def sendComment(request):
     results = {}
     if request.method == 'POST':
