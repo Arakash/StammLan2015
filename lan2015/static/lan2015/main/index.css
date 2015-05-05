@@ -24,6 +24,7 @@
 }
 
 body{
+  position: relative;
   overflow: hidden;
   background: url("background2.jpg");
   background-repeat: no-repeat;
