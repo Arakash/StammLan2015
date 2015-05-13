@@ -15,3 +15,7 @@ class Comment(models.Model):
     text = models.CharField(max_length=100)
     color = models.CharField(max_length=9)
     pub_date = models.DateTimeField('date published')
+
+class Subscriber(models.Model):
+    name = models.CharField(max_length=45)
+    

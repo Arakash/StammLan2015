@@ -71,10 +71,6 @@
           0 20px 20px rgba(0,0,0,.15),
           0 0 5px black;
         }
-
-        .top {
-            margin-top: 5em;
-        }
     </style>
 </head>
 
@@ -106,13 +102,14 @@
 </div>
 
 <div class="mainPage">
-    <div style="z-index: 1; height: 250px; width: 100vw">
+    <p>Music: Tobu - My Own Paradise</p>
+    <div style="z-index: 1; height: 200px; width: 100vw">
       <canvas class="top" id="visCanvas" width="1300" height="160">
       </canvas>
-
+<!--
       <audio id="audioElement" style="display: block;">
           <source src="{% static 'lan2015/main/end.ogg' %}" type="audio/ogg">
-      </audio>
+      </audio>-->
     </div>
       <canvas id="spotlightTest" width="600" height="300" style="z-index:-1; position: absolute; top:0"></canvas>
 
@@ -167,7 +164,6 @@
       </div>
     </div>
     </div>
-  <p>Music: Tobu - My Own Paradise</p>
 </div>
 
 <div class="mediaPage">
@@ -235,7 +231,7 @@
 
   var lightsOn = false;
 
-  $(function(){
+function initIndex(context, source){
     {% if comments %}
         {% for c in comments %}
             addComment(".commentShow", "{{ c.userName }}", "{{ c.text }}", "{{ c.pub_date|date:'d-m-y H:i' }}");
@@ -250,7 +246,7 @@
 
     // initializer
     audioSystem = new stammlan.AudioSystem();
-    audioSystem.setup(document.getElementById("audioElement"));
+    audioSystem.setup(document.getElementById("audioElement"), context,source);
 
     vis = new stammlan.Vis(document.getElementById("visCanvas"));
 
@@ -268,7 +264,7 @@
       /* document.getElementById("neon").setAttribute("style",
        "opacity: " + opacity);*/
       /*$("#neon").css("text-shadow", opacity*10+"px "+opacity*10+"px 10px rgb(240, 0, 0)");*/
-      $("#neon").css("transform", "scale("+Number(1+0.5*opacity)+","+ Number(1+0.5*opacity)+ ")");
+      $("#neon").css("transform", "scale("+Number(1+0.3*opacity)+","+ Number(1+0.3*opacity)+ ")");
 
       //Logic for the Spotlight Effect.
   /*    if(opacity>0.70 && !lightsOn){
@@ -294,7 +290,7 @@
     audioSystem.addListener(vis.update.bind(vis));
     audioSystem.startVis();
 
-  });
+  }
 
   function initbpmInfluence(bpm, funct){
     /*

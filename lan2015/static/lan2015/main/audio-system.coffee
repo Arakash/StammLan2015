@@ -36,11 +36,17 @@ window.stammlan.AudioSystem = class AudioSystem
 
         @calculateScale()
 
-    setup: (element) ->
-        @sourceNode = @context.createMediaElementSource(element)
+    setup: (element, context, source) ->
+        if context
+            @context = context;
+        if source
+            @sourceNode = source
+        else
+            @sourceNode = @context.createMediaElementSource(element)
+            @sourceNode.connect @context.destination
+
         @analyzerNode = @context.createScriptProcessor(FFT_SIZE)
 
-        @sourceNode.connect @context.destination
         @sourceNode.connect @analyzerNode
         @analyzerNode.connect @context.destination
 
@@ -74,7 +80,8 @@ window.stammlan.AudioSystem = class AudioSystem
 
         # collect data and convert to mono
         for i in [0...FFT_SIZE]
-            visData[i] = (@visLeftChannel[i] + @visRightChannel[i])  / 2.0
+            if (@visLeftChannel && @visRightChannel)
+                visData[i] = (@visLeftChannel[i] + @visRightChannel[i])  / 2.0
 
         #console.log visData
         fftData = @fft.calcFreq visData

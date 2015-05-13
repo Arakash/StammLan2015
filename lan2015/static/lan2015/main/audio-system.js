@@ -52,10 +52,17 @@
       this.calculateScale();
     }
 
-    AudioSystem.prototype.setup = function(element) {
-      this.sourceNode = this.context.createMediaElementSource(element);
+    AudioSystem.prototype.setup = function(element, context, source) {
+      if (context) {
+        this.context = context;
+      }
+      if (source) {
+        this.sourceNode = source;
+      } else {
+        this.sourceNode = this.context.createMediaElementSource(element);
+        this.sourceNode.connect(this.context.destination);
+      }
       this.analyzerNode = this.context.createScriptProcessor(FFT_SIZE);
-      this.sourceNode.connect(this.context.destination);
       this.sourceNode.connect(this.analyzerNode);
       this.analyzerNode.connect(this.context.destination);
       this.analyzerNode.onaudioprocess = (function(_this) {
@@ -96,7 +103,9 @@
       var fftData, i, listener, visData, _i, _j, _len, _ref, _results;
       visData = new Array(FFT_SIZE);
       for (i = _i = 0; 0 <= FFT_SIZE ? _i < FFT_SIZE : _i > FFT_SIZE; i = 0 <= FFT_SIZE ? ++_i : --_i) {
-        visData[i] = (this.visLeftChannel[i] + this.visRightChannel[i]) / 2.0;
+        if (this.visLeftChannel && this.visRightChannel) {
+          visData[i] = (this.visLeftChannel[i] + this.visRightChannel[i]) / 2.0;
+        }
       }
       fftData = this.fft.calcFreq(visData);
       this.formatVis(fftData);
