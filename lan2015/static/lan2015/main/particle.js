@@ -63,16 +63,9 @@
     ParticleEffect.prototype.lastUpdate = null;
 
     function ParticleEffect(target) {
-      console.log(target);
       this.target = target;
-      this.pos = {
-        x: 0,
-        y: 0
-      };
-      this.speed = {
-        x: 0,
-        y: 0
-      };
+      this.pos = null;
+      this.lastPos = null;
       this.particles = [];
       target.addEventListener("mousemove", ((function(_this) {
         return function(e) {
@@ -87,43 +80,64 @@
     }
 
     ParticleEffect.prototype.updateMouse = function(event) {
-      var now, rect;
+      var rect;
       rect = this.target.getBoundingClientRect();
-      if (this.lastUpdate != null) {
-        now = Date.now();
-        if (now === this.lastUpdate) {
-          return;
-        }
-        this.speed.x = (event.pageX - rect.left - this.pos.x) / ((now - this.lastUpdate) / 1000);
-        this.speed.y = (event.pageY - rect.top - this.pos.y) / ((now - this.lastUpdate) / 1000);
-        this.pos.x = event.pageX - rect.left;
-        return this.pos.y = event.pageY - rect.top;
-      } else {
-        this.pos.x = event.pageX - rect.left;
-        this.pos.y = event.pageY - rect.top;
-        this.speed.x = 0;
-        this.speed.y = 0;
-        return this.lastUpdate = Date.now();
-      }
+      return this.pos = {
+        x: event.pageX - rect.left,
+        y: event.pageY - rect.top
+      };
     };
 
     ParticleEffect.prototype.animate = function() {
-      var ctx, i, p, particle, rect, speedX, speedY, _i, _j, _k, _len, _len1, _ref, _ref1;
+      var ctx, i, now, p, particle, rect, speed, speedX, speedY, _i, _j, _k, _len, _len1, _ref, _ref1;
+      now = Date.now();
+      if (this.pos == null) {
+        window.requestAnimationFrame(((function(_this) {
+          return function() {
+            return _this.animate();
+          };
+        })(this)));
+        return;
+      }
+      if (this.lastPos == null) {
+        this.lastPos = this.pos;
+        window.requestAnimationFrame(((function(_this) {
+          return function() {
+            return _this.animate();
+          };
+        })(this)));
+        return;
+      }
+      if (this.lastUpdate == null) {
+        this.lastUpdate = now;
+        window.requestAnimationFrame(((function(_this) {
+          return function() {
+            return _this.animate();
+          };
+        })(this)));
+        return;
+      }
+      speed = {
+        x: (this.pos.x - this.lastPos.x) / ((now - this.lastUpdate) / 1000),
+        y: (this.pos.y - this.lastPos.y) / ((now - this.lastUpdate) / 1000)
+      };
+      this.lastPos = this.pos;
+      console.log("speed: (" + speed.x + ", " + speed.y + ")");
       rect = this.target.getBoundingClientRect();
       this.target.width = rect.width;
       this.target.height = rect.height;
       ctx = this.target.getContext('2d');
-      if (Math.abs(this.speed.x) > 0 || Math.abs(this.speed.y) > 0) {
+      if (Math.abs(speed.x) > 0 || Math.abs(speed.y) > 0) {
         for (i = _i = 0; _i < 4; i = ++_i) {
-          speedX = Math.abs(this.speed.x) * 4 + 1.0 * Math.random();
-          speedY = this.speed.y * 4 + 1.0 * Math.random();
+          speedX = Math.abs(speed.x) / 200 + 2.0 * Math.random();
+          speedY = speed.y / 200 + -2.0 + 4.0 * Math.random();
           this.particles.push(new Particle({
             x: this.pos.x,
             y: this.pos.y
           }, {
             x: speedX,
             y: speedY
-          }, this.speed.x < 0));
+          }, speed.x < 0));
         }
       }
       _ref = this.particles;
@@ -143,13 +157,12 @@
         ctx.arc(p.pos.x, p.pos.y, 2, 0, 2 * Math.PI);
         ctx.fill();
       }
-      window.requestAnimationFrame(((function(_this) {
+      this.lastUpdate = now;
+      return window.requestAnimationFrame(((function(_this) {
         return function() {
           return _this.animate();
         };
       })(this)));
-      this.speed.x = 0;
-      return this.speed.y = 0;
     };
 
     return ParticleEffect;

@@ -45,10 +45,9 @@ window.stammlan.ParticleEffect = class ParticleEffect
     lastUpdate: null
     
     constructor: (target) ->
-        console.log target
         @target = target
-        @pos = {x: 0, y : 0}
-        @speed = {x:0, y : 0}
+        @pos = null
+        @lastPos = null
         @particles = []
         
         target.addEventListener "mousemove", ( (e) => @updateMouse(e))
@@ -57,24 +56,32 @@ window.stammlan.ParticleEffect = class ParticleEffect
         
     updateMouse: (event) ->
         rect = @target.getBoundingClientRect()
-        if @lastUpdate?
-            now = Date.now()
-            if now == @lastUpdate
-                return
-            @speed.x = (event.pageX  - rect.left - @pos.x) / ((now - @lastUpdate) / 1000)
-            @speed.y = (event.pageY - rect.top - @pos.y) / ((now - @lastUpdate) / 1000)
-            @pos.x = event.pageX - rect.left
-            @pos.y = event.pageY - rect.top
-        else     
-            @pos.x = event.pageX - rect.left
-            @pos.y = event.pageY - rect.top
-            @speed.x = 0
-            @speed.y = 0
-            @lastUpdate = Date.now()
+        @pos = {x: event.pageX - rect.left, y: event.pageY - rect.top}
+        #console.log @pos
             
         #console.log "pointer pos(#{@pos.x}, #{@pos.y}) speed(#{@speed.x}, #{@speed.y})"
         
     animate: ->
+        now = Date.now()
+        if not @pos?
+            window.requestAnimationFrame ( => @animate())
+            return
+        if not @lastPos?
+            @lastPos = @pos
+            window.requestAnimationFrame ( => @animate())
+            return
+        if not @lastUpdate?
+            @lastUpdate = now
+            window.requestAnimationFrame ( => @animate())
+            return
+        
+        speed = {
+            x: (@pos.x - @lastPos.x) / ((now - @lastUpdate) / 1000)
+            y: (@pos.y - @lastPos.y) / ((now - @lastUpdate) / 1000)
+        }
+        @lastPos = @pos
+        console.log "speed: (#{speed.x}, #{speed.y})"
+        
         #console.log "animate"
         # create 10 new particles
         rect = @target.getBoundingClientRect()
@@ -82,12 +89,12 @@ window.stammlan.ParticleEffect = class ParticleEffect
         @target.height = rect.height
         ctx = @target.getContext('2d')
         
-        if Math.abs(@speed.x) > 0 or Math.abs(@speed.y) > 0
+        if Math.abs(speed.x) > 0 or Math.abs(speed.y) > 0
             for i in [0...4]
-                speedX = Math.abs(@speed.x) * 4 + 1.0 * Math.random()
-                speedY = @speed.y * 4 + 1.0 * Math.random()
+                speedX = Math.abs(speed.x) / 200 + 2.0 * Math.random()
+                speedY = speed.y / 200 + - 2.0 + 4.0 * Math.random()
                 
-                @particles.push new Particle({x: @pos.x, y: @pos.y}, {x: speedX, y: speedY}, (@speed.x < 0))
+                @particles.push new Particle({x: @pos.x, y: @pos.y}, {x: speedX, y: speedY}, (speed.x < 0))
         
         for particle in @particles
             particle.update()
@@ -104,7 +111,5 @@ window.stammlan.ParticleEffect = class ParticleEffect
             ctx.fill()
             #console.log "draw particle at (#{p.pos.x}, #{p.pos.y})"
         
+        @lastUpdate = now
         window.requestAnimationFrame ( => @animate())
-        
-        @speed.x = 0
-        @speed.y = 0
