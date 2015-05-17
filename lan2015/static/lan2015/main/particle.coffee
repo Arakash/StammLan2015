@@ -15,7 +15,7 @@ class Particle
 
     update: ->
         now = Date.now()
-        if now == @creationTime
+        if now <= @creationTime
             return
         @opacity = 1.0 - 1.0 * ((now - @creationTime) / 500)
         @speed.x -= 0.5 * ((now - @creationTime) / 1000)
@@ -41,6 +41,7 @@ window.stammlan.ParticleEffect = class ParticleEffect
 
     pos: null
     speed: null
+    mouseDown: false
 
     lastUpdate: null
 
@@ -49,10 +50,22 @@ window.stammlan.ParticleEffect = class ParticleEffect
         @pos = null
         @lastPos = null
         @particles = []
+        @stickyParticles = []
 
+        target.addEventListener "mousedown", ( (e) => @onMouseDown(e))
+        target.addEventListener "mouseup", ( (e) => @onMouseUp(e))
+        target.addEventListener "mouseout", ( (e) => @onMouseUp(e))
         target.addEventListener "mousemove", ( (e) => @updateMouse(e))
 
         window.requestAnimationFrame ( => @animate())
+
+    onMouseDown: (e) ->
+        @mouseDown = true
+
+    onMouseUp: (e) ->
+        @mouseDown = false
+        for i in [0...@stickyParticles.length]
+            @stickyParticles[i].creationTime = Date.now() + i * 2
 
     updateMouse: (event) ->
         rect = @target.getBoundingClientRect()
@@ -95,11 +108,20 @@ window.stammlan.ParticleEffect = class ParticleEffect
                 speedY = speed.y / 200 + - 2.0 + 4.0 * Math.random()
 
                 @particles.push new Particle({x: @pos.x, y: @pos.y}, {x: speedX, y: speedY}, (speed.x < 0))
+            if @mouseDown
+                for i in [0...4]
+                    x = @pos.x - 10.0 + 10.0 * Math.random()
+                    y = @pos.y - 10.0 + 10.0 * Math.random()
+                    @stickyParticles.push new Particle({x: x, y: y}, {x: 0, y: 0}, false)
 
         for particle in @particles
             particle.update()
+        if not @mouseDown
+            for particle in @stickyParticles
+                particle.update()
 
         @particles = @particles.filter (p) -> (p.opacity > 0)
+        @stickyParticles = @stickyParticles.filter (p) -> (p.opacity > 0)
 
         #console.log @particles
 
@@ -109,7 +131,12 @@ window.stammlan.ParticleEffect = class ParticleEffect
             ctx.beginPath()
             ctx.arc p.pos.x, p.pos.y, 2, 0, 2 * Math.PI
             ctx.fill()
-            #console.log "draw particle at (#{p.pos.x}, #{p.pos.y})"
+
+        for p in @stickyParticles
+            ctx.fillStyle = "rgba(171, 215, 229, #{p.opacity})"
+            ctx.beginPath()
+            ctx.arc p.pos.x, p.pos.y, 2, 0, 2 * Math.PI
+            ctx.fill()
 
         @lastUpdate = now
         window.requestAnimationFrame ( => @animate())
