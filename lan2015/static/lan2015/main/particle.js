@@ -122,7 +122,6 @@
         y: (this.pos.y - this.lastPos.y) / ((now - this.lastUpdate) / 1000)
       };
       this.lastPos = this.pos;
-      console.log("speed: (" + speed.x + ", " + speed.y + ")");
       rect = this.target.getBoundingClientRect();
       this.target.width = rect.width;
       this.target.height = rect.height;
