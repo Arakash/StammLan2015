@@ -72,7 +72,7 @@
           0 20px 20px rgba(0,0,0,.15),
           0 0 5px black;
         }
-        
+
         .fit {
             position: absolute;
             left: 0;
@@ -265,9 +265,10 @@ function initIndex(context, source){
     var viscanvas = document.getElementById('visCanvas');
     viscanvas.width = window.innerWidth;
 
+    var lastLevel = 0.0;
     audioSystem.addListener(function (bars) {
 
-      opacity = (bars[0] - 14) / 10;
+      opacity = (bars[0] - 18) / 10;
       if (opacity < 0)
         opacity = 0.0
       if (opacity > 1.0)
@@ -276,7 +277,13 @@ function initIndex(context, source){
       /* document.getElementById("neon").setAttribute("style",
        "opacity: " + opacity);*/
       /*$("#neon").css("text-shadow", opacity*10+"px "+opacity*10+"px 10px rgb(240, 0, 0)");*/
-      $("#neon").css("transform", "scale("+Number(1+0.3*opacity)+","+ Number(1+0.3*opacity)+ ")");
+      if (opacity > lastLevel) {
+          $("#neon").css("transition", "transform 0.05s ease-out");
+      } else {
+          $("#neon").css("transition", "transform 0.2s ease-out");
+      }
+      lastLevel = opacity;
+      $("#neon").css("transform", "scale("+Number(1+0.8*opacity)+","+ Number(1+0.8*opacity)+ ")");
 
       //Logic for the Spotlight Effect.
   /*    if(opacity>0.70 && !lightsOn){
