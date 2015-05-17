@@ -17,6 +17,7 @@
     <script src="{% static 'lan2015/main/math.min.js' %}"></script>
     <script src="{% static 'lan2015/main/FFT.js' %}"></script>
     <script src="{% static 'lan2015/main/audio-system.js' %}"></script>
+    <script src="{% static 'lan2015/main/particle.js' %}"></script>
     <script src="{% static 'lan2015/main/vis.js' %}"></script>
     <script src="{% static 'lan2015/main/jquery-2.1.1.js' %}"></script>
     <script src="{% static 'lan2015/main/spotlight.js' %}"></script>
@@ -71,6 +72,16 @@
           0 20px 20px rgba(0,0,0,.15),
           0 0 5px black;
         }
+        
+        .fit {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 
@@ -96,7 +107,8 @@
     <input id="registerButton" type="button" class="flatButton" value="Anmeldung zur LAN HIER">
 </div>
 
-<div class="startPage">
+<div style="position: relative" class="startPage">
+    <canvas class="fit"></canvas>
     <input class="flatButton" type="button" value="Enter" id="enterButton" style="z-index: 5"/>
 
 </div>
@@ -378,5 +390,8 @@ xhr.setRequestHeader("X-CSRFToken", csrftoken);
 }
 }
 });
+
+// init particle effect
+new stammlan.ParticleEffect(document.querySelector("div.startPage canvas"))
 </script>
 </html>
