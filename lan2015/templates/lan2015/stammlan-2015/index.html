@@ -243,13 +243,15 @@
 
   var lightsOn = false;
 
-function initIndex(context, source){
+function initComments(){
     {% if comments %}
         {% for c in comments %}
             addComment(".commentShow", "{{ c.userName }}", "{{ c.text }}", "{{ c.pub_date|date:'d-m-y H:i' }}");
         {% endfor %}
     {% endif %}
+}
 
+function initIndex(context, source){
 
     var spotlightcanvas = document.getElementById('spotlightTest');
     spotlightcanvas.width = window.innerWidth;

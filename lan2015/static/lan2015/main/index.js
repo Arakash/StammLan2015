@@ -29,7 +29,7 @@ sounds = {
 var startOffset = 0;
 
 $(function(){
-
+    initComments();
     initWebAudio();
     loadSounds(sounds, function(){
         gain = context.createGain();
@@ -114,7 +114,7 @@ $(function(){
   });
 
   $("#closeMedia").click(function(){
-      $(".mediaPage").css("left","-100vw");
+      $(".mediaPage").css("left","-130vw");
   });
 
   $("#subscribeButton").click(function(){
@@ -327,5 +327,18 @@ function loadSounds(obj, finishedLoadingCallback) {
       });
     }
   }
-
 }
+
+var resizeTimer = 0;
+$(window).resize(function(){
+    console.log("resize event!!");
+
+    $("div").addClass("notransition");
+
+    clearTimeout(resizeTimer);
+
+    resizeTimer = setTimeout(function() {
+        $("div").removeClass("notransition");
+    }, 250);
+
+});
