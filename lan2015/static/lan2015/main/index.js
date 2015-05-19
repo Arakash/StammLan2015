@@ -147,7 +147,7 @@ $(function(){
             commentDate = result['commentDate'];
 
             console.log(commentText + commentName + commentColor + commentDate);
-            addComment(".commentShow", commentName, commentText, commentDate);
+            addComment(".commentShow", commentName, commentText, commentDate, commentColor);
             $(".commentShow").get(0).scrollTop = $(".commentShow").get(0).scrollHeight;
             return true;
         }
@@ -331,7 +331,6 @@ function loadSounds(obj, finishedLoadingCallback) {
 
 var resizeTimer = 0;
 $(window).resize(function(){
-    console.log("resize event!!");
 
     $("div").addClass("notransition");
 

@@ -246,7 +246,7 @@
 function initComments(){
     {% if comments %}
         {% for c in comments %}
-            addComment(".commentShow", "{{ c.userName }}", "{{ c.text }}", "{{ c.pub_date|date:'d-m-y H:i' }}");
+            addComment(".commentShow", "{{ c.userName }}", "{{ c.text }}", "{{ c.pub_date|date:'d-m-y H:i' }}", "{{ c.color}}");
         {% endfor %}
     {% endif %}
 }
@@ -335,9 +335,9 @@ function initIndex(context, source){
     }, ms);*/
   }
 
-  function addComment(parentSelector, name, text, date){
+  function addComment(parentSelector, name, text, date,color){
       $(parentSelector).append(
-      '<div class="comment">'+
+      '<div class="comment" style="background-color: '+color+'" >'+
         '<h5>'+name+'</h5>'+
         '<span class="commentDate">'+date+'</span>'+
         text +

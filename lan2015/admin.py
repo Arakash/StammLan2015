@@ -11,8 +11,8 @@ class AnnouncementAdmin(admin.ModelAdmin):
 
 
 class CommentAdmin(admin.ModelAdmin):
-    fields = ['userName', 'text', 'pub_date']
-    list_display = ('userName', 'text', 'pub_date')
+    fields = ['userName', 'text', 'pub_date', 'color']
+    list_display = ('userName', 'text', 'pub_date', 'color')
 
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Announcement, AnnouncementAdmin)

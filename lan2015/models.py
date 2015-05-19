@@ -18,4 +18,6 @@ class Comment(models.Model):
 
 class Subscriber(models.Model):
     name = models.CharField(max_length=45)
-    
+    arrival = models.DateTimeField('arrival')
+    departure=models.DateTimeField('departure')
+    switch = models.CharField(max_length=80)
