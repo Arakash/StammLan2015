@@ -22,9 +22,11 @@
     <script src="{% static 'lan2015/main/jquery-2.1.1.js' %}"></script>
     <script src="{% static 'lan2015/main/spotlight.js' %}"></script>
     <script src="{% static 'lan2015/main/index.js' %}"></script>
-    <script src="{% static 'lan2015/main/libs/SeamlessLoop.js' %}"></script>
+    <script src="{% static 'lan2015/main/libs/jquery-ui.min.js' %}"></script>
 
     <link rel="stylesheet" href="{% static 'lan2015/main/index.css' %}"/>
+    <link rel="stylesheet" href="{% static 'lan2015/main/libs/jquery-ui.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'lan2015/main/libs/jquery-ui.theme.min.css' %}"/>
 
     <style>
         html, body {
@@ -176,6 +178,13 @@
       </div>
     </div>
     </div>
+
+    <div id="navigation">
+        <a href="#"> Turn Effects OFF </a>
+        <a href="#"> Was wird gezockt? </a>
+        <a href="#"> Essen/trinken? </a>
+        <a href="#"> Is it happening? </a>
+    </div>
 </div>
 
 <div class="mediaPage">
@@ -190,6 +199,13 @@
                 <input type="text" id="nameInput2" class="flatInput" placeholder="Max Mustermann"/>
             </fieldset>
             <fieldset>
+                <legend> Ankunft und Abfahrt</legend>
+                von
+                <input type="text" id="arrivalInput" class="flatInput" placeholder="12.06.2015"/>
+                bis
+                <input type="text" id="departureInput" class="flatInput" placeholder="14.06.2015"/>
+            </fieldset>
+            <fieldset>
                 <legend>Switch:</legend>
                 <input type="text" id="switchInput" placeholder="8port 100Mbit" class="flatInput"/>
             </fieldset>
@@ -198,38 +214,36 @@
                 <input type="text" id="tischInput" class="flatInput"/>
             </fieldset>
             <div>
-                <input id="formSubmitButton" type="submit" value="OK" class="flatButton"/>
+                <input id="subscriberFormSubmitButton" type="button" value="OK" class="flatButton"/>
             </div>
         </form>
     </div>
 
     <div class="subscribers">
-        <table>
+        <table id="subscriberTable">
             <tr>
                 <td><b> Name  </b></td>
+                <td><b> Ankunft </b></td>
+                <td><b> Abfahrt <b></td>
                 <td><b> switch</b></td>
-                <td><b> Stuhl </b></td>
                 <td><b> Tisch </b></td>
             </tr>
 
+            {% if subscribers %}
+            {% for s in subscribers %}
             <tr>
-                <td> Max Mustermann </td>
-                <td> 5-port Gigabit </td>
-                <td> - </td>
-                <td> Bierbank </td>
-            </tr>
-
-            <tr>
-                <td> The Dude </td>
-                <td> 16-port 100Mb </td>
-                <td> 1 Sessel </td>
+                <td> {{ s.name }} </td>
+                <td> {{ s.arrival }} </td>
+                <td> {{ s.departure }} </td>
+                <td> {{ s.switch }} </td>
                 <td> - </td>
             </tr>
-
+            {% endfor %}
+            {% endif %}
         </table>
     </div>
 
-    <div class="ytBox" style="margin:15px">
+    <div class="ytBox" style="margin:15px; display: none">
         <iframe width="360" height="215" src="https://www.youtube.com/embed/pH7tqu5r1QE" frameborder="0" allowfullscreen></iframe>
         <iframe width="360" height="215" src="https://www.youtube.com/embed/KkVxzvFxwqA" frameborder="0" allowfullscreen></iframe>
     </div>
@@ -243,13 +257,13 @@
 
   var lightsOn = false;
 
-function initComments(){
+$(function(){
     {% if comments %}
         {% for c in comments %}
             addComment(".commentShow", "{{ c.userName }}", "{{ c.text }}", "{{ c.pub_date|date:'d-m-y H:i' }}", "{{ c.color}}");
         {% endfor %}
     {% endif %}
-}
+})
 
 function initIndex(context, source){
 
@@ -343,6 +357,18 @@ function initIndex(context, source){
         text +
       '</div>'
   );
+  }
+
+  function addSubscriber(parentSelector, name, arrival, departure, subSwitch,tisch){
+      $(parentSelector).append(
+                      "<tr>"+
+                          "<td> "+name+" </td>"+
+                          "<td> "+arrival+" </td>"+
+                          "<td> "+departure+" </td>"+
+                          "<td> "+subSwitch+" </td>"+
+                          "<td> "+tisch+" </td>"+
+                      "</tr>"
+      );
   }
 </script>
 

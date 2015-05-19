@@ -224,7 +224,11 @@ body{
   height: 54vh;
   padding: 1vh 0.5vw 1vh 0.5vw;
   transition: top 6s;
-  overflow-y: auto;
+  overflow-y: hidden;
+}
+
+#faqBox:hover{
+    overflow-y: auto;
 }
 
 #faqBox h3{

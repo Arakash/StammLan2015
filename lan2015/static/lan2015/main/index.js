@@ -29,7 +29,6 @@ sounds = {
 var startOffset = 0;
 
 $(function(){
-    initComments();
     initWebAudio();
     loadSounds(sounds, function(){
         gain = context.createGain();
@@ -45,11 +44,15 @@ $(function(){
         console.log("current Time: " + context.currentTime + " intro duration:" + sounds.intro.buffer.duration
         + " Offset: " + startOffset);
 
+        //experiment: init sound system on Site load
+        initIndex(context, sounds.end.source);
+
         if(localStorage && localStorage.getItem("muted") == "true"){
             console.log("starting page with muted audio!!");
             stopAudio();
             $("#rememberBox").get(0).checked = true;
         }
+
     });
 
 /*
@@ -72,7 +75,7 @@ $(function(){
     audioState="mainPage";
     console.log("entering Main Page!");
     sounds.loop.source.onended = function(){
-        initIndex(context, sounds.end.source);
+
         console.log("playing End sound!");
     }
 
@@ -111,6 +114,7 @@ $(function(){
 
   $("#registerButton").click(function(){
       $(".mediaPage").css("left", "0");
+      $(".ytBox").show();
   });
 
   $("#closeMedia").click(function(){
@@ -153,7 +157,57 @@ $(function(){
         }
     });
   });
+
+
+  $("#subscriberFormSubmitButton").click(function(){
+      var subName     = $("#nameInput2").val();
+      var subArrival  = $("#arrivalInput").val();
+      var subDeparture= $("#departureInput").val();
+      var subSwitch   = $("#switchInput").val();
+      console.log("sending new Subscriber!");
+      sendSubscriber(subName, subArrival, subDeparture, subSwitch);
+  });
+
+  $("#arrivalInput").datepicker({
+      showOtherMonths: true,
+      selectOtherMonths: true,
+      dateFormat: "dd.mm.yy",
+      minDate: new Date(2015, 6, 11),
+      maxDate: new Date(2015, 6, 13)
+  });
+  $("#departureInput").datepicker({
+      showOtherMonths: true,
+      selectOtherMonths: true,
+      dateFormat: "dd.mm.yy",
+      minDate: new Date(2015, 6, 12),
+      maxDate: new Date(2015, 6, 15)
+  });
 });
+
+function sendSubscriber(subName, subArrival, subDeparture, subSwitch){
+
+    if(!subName || !subArrival || !subDeparture || !subSwitch){
+        console.err("Arguments are not allowed to be null!");
+        return false;
+    }
+
+    $.ajax({
+        url: "sendSubscriber/",
+        type: "POST",
+        data: {subName: subName, subArrival: subArrival, subDeparture: subDeparture, subSwitch: subSwitch},
+        success: function(result){
+            console.log("success!");
+
+            subName     = result['subName'];
+            subArrival  = result['subArrival'];
+            subDeparture= result['subDeparture'];
+            subSwitch   = result['subSwitch'];
+
+            addSubscriber("#subscriberTable", subName, subArrival, subDeparture, subSwitch);
+            return true;
+        }
+    })
+}
 
 function startLoop(){
   loop.update("sound1",true);
