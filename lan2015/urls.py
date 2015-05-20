@@ -7,4 +7,5 @@ urlpatterns = patterns('',
     #url(r'^$', views.index, name='index'),
     url(r'^$', views.main, name='main'),
     url(r'^sendComment/$', views.sendComment),
+    url(r'^sendSubscriber/$', views.sendSubscriber),
 )

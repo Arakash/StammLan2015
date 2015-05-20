@@ -22,9 +22,11 @@
     <script src="{% static 'lan2015/main/jquery-2.1.1.js' %}"></script>
     <script src="{% static 'lan2015/main/spotlight.js' %}"></script>
     <script src="{% static 'lan2015/main/index.js' %}"></script>
-    <script src="{% static 'lan2015/main/libs/SeamlessLoop.js' %}"></script>
+    <script src="{% static 'lan2015/main/libs/jquery-ui.min.js' %}"></script>
 
     <link rel="stylesheet" href="{% static 'lan2015/main/index.css' %}"/>
+    <link rel="stylesheet" href="{% static 'lan2015/main/libs/jquery-ui.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'lan2015/main/libs/jquery-ui.theme.min.css' %}"/>
 
     <style>
         html, body {
@@ -72,7 +74,7 @@
           0 20px 20px rgba(0,0,0,.15),
           0 0 5px black;
         }
-        
+
         .fit {
             position: absolute;
             left: 0;
@@ -176,6 +178,13 @@
       </div>
     </div>
     </div>
+
+    <div id="navigation">
+        <a href="#"> Turn Effects OFF </a>
+        <a href="#"> Was wird gezockt? </a>
+        <a href="#"> Essen/trinken? </a>
+        <a href="#"> Is it happening? </a>
+    </div>
 </div>
 
 <div class="mediaPage">
@@ -190,6 +199,13 @@
                 <input type="text" id="nameInput2" class="flatInput" placeholder="Max Mustermann"/>
             </fieldset>
             <fieldset>
+                <legend> Ankunft und Abfahrt</legend>
+                von
+                <input type="text" id="arrivalInput" class="flatInput" placeholder="12.06.2015"/>
+                bis
+                <input type="text" id="departureInput" class="flatInput" placeholder="14.06.2015"/>
+            </fieldset>
+            <fieldset>
                 <legend>Switch:</legend>
                 <input type="text" id="switchInput" placeholder="8port 100Mbit" class="flatInput"/>
             </fieldset>
@@ -198,38 +214,36 @@
                 <input type="text" id="tischInput" class="flatInput"/>
             </fieldset>
             <div>
-                <input id="formSubmitButton" type="submit" value="OK" class="flatButton"/>
+                <input id="subscriberFormSubmitButton" type="button" value="OK" class="flatButton"/>
             </div>
         </form>
     </div>
 
     <div class="subscribers">
-        <table>
+        <table id="subscriberTable">
             <tr>
                 <td><b> Name  </b></td>
+                <td><b> Ankunft </b></td>
+                <td><b> Abfahrt <b></td>
                 <td><b> switch</b></td>
-                <td><b> Stuhl </b></td>
                 <td><b> Tisch </b></td>
             </tr>
 
+            {% if subscribers %}
+            {% for s in subscribers %}
             <tr>
-                <td> Max Mustermann </td>
-                <td> 5-port Gigabit </td>
-                <td> - </td>
-                <td> Bierbank </td>
-            </tr>
-
-            <tr>
-                <td> The Dude </td>
-                <td> 16-port 100Mb </td>
-                <td> 1 Sessel </td>
+                <td> {{ s.name }} </td>
+                <td> {{ s.arrival }} </td>
+                <td> {{ s.departure }} </td>
+                <td> {{ s.switch }} </td>
                 <td> - </td>
             </tr>
-
+            {% endfor %}
+            {% endif %}
         </table>
     </div>
 
-    <div class="ytBox" style="margin:15px">
+    <div class="ytBox" style="margin:15px; display: none">
         <iframe width="360" height="215" src="https://www.youtube.com/embed/pH7tqu5r1QE" frameborder="0" allowfullscreen></iframe>
         <iframe width="360" height="215" src="https://www.youtube.com/embed/KkVxzvFxwqA" frameborder="0" allowfullscreen></iframe>
     </div>
@@ -243,13 +257,15 @@
 
   var lightsOn = false;
 
-function initIndex(context, source){
+$(function(){
     {% if comments %}
         {% for c in comments %}
-            addComment(".commentShow", "{{ c.userName }}", "{{ c.text }}", "{{ c.pub_date|date:'d-m-y H:i' }}");
+            addComment(".commentShow", "{{ c.userName }}", "{{ c.text }}", "{{ c.pub_date|date:'d-m-y H:i' }}", "{{ c.color}}");
         {% endfor %}
     {% endif %}
+})
 
+function initIndex(context, source){
 
     var spotlightcanvas = document.getElementById('spotlightTest');
     spotlightcanvas.width = window.innerWidth;
@@ -265,9 +281,10 @@ function initIndex(context, source){
     var viscanvas = document.getElementById('visCanvas');
     viscanvas.width = window.innerWidth;
 
+    var lastLevel = 0.0;
     audioSystem.addListener(function (bars) {
 
-      opacity = (bars[0] - 14) / 10;
+      opacity = (bars[0] - 18) / 10;
       if (opacity < 0)
         opacity = 0.0
       if (opacity > 1.0)
@@ -276,7 +293,13 @@ function initIndex(context, source){
       /* document.getElementById("neon").setAttribute("style",
        "opacity: " + opacity);*/
       /*$("#neon").css("text-shadow", opacity*10+"px "+opacity*10+"px 10px rgb(240, 0, 0)");*/
-      $("#neon").css("transform", "scale("+Number(1+0.3*opacity)+","+ Number(1+0.3*opacity)+ ")");
+      if (opacity > lastLevel) {
+          $("#neon").css("transition", "transform 0.05s ease-out");
+      } else {
+          $("#neon").css("transition", "transform 0.2s ease-out");
+      }
+      lastLevel = opacity;
+      $("#neon").css("transform", "scale("+Number(1+0.8*opacity)+","+ Number(1+0.8*opacity)+ ")");
 
       //Logic for the Spotlight Effect.
   /*    if(opacity>0.70 && !lightsOn){
@@ -326,14 +349,26 @@ function initIndex(context, source){
     }, ms);*/
   }
 
-  function addComment(parentSelector, name, text, date){
+  function addComment(parentSelector, name, text, date,color){
       $(parentSelector).append(
-      '<div class="comment">'+
+      '<div class="comment" style="background-color: '+color+'" >'+
         '<h5>'+name+'</h5>'+
         '<span class="commentDate">'+date+'</span>'+
         text +
       '</div>'
   );
+  }
+
+  function addSubscriber(parentSelector, name, arrival, departure, subSwitch,tisch){
+      $(parentSelector).append(
+                      "<tr>"+
+                          "<td> "+name+" </td>"+
+                          "<td> "+arrival+" </td>"+
+                          "<td> "+departure+" </td>"+
+                          "<td> "+subSwitch+" </td>"+
+                          "<td> "+tisch+" </td>"+
+                      "</tr>"
+      );
   }
 </script>
 
