@@ -50,6 +50,7 @@ def sendComment(request):
     return HttpResponse(j, content_type='application/json')
 
 
+@csrf_exempt
 def sendSubscriber(request):
     results= {}
     if request.method == 'POST':

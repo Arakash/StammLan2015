@@ -226,7 +226,7 @@
                 <td><b> Ankunft </b></td>
                 <td><b> Abfahrt <b></td>
                 <td><b> switch</b></td>
-                <td><b> Tisch </b></td>
+                <td><b> sonstiges </b></td>
             </tr>
 
             {% if subscribers %}
@@ -236,7 +236,7 @@
                 <td> {{ s.arrival }} </td>
                 <td> {{ s.departure }} </td>
                 <td> {{ s.switch }} </td>
-                <td> - </td>
+                <td> {{ s.other }} </td>
             </tr>
             {% endfor %}
             {% endif %}
@@ -266,7 +266,7 @@ $(function(){
 })
 
 function initIndex(context, source){
-
+    var spotlightsEnabled = false;
     var spotlightcanvas = document.getElementById('spotlightTest');
     spotlightcanvas.width = window.innerWidth;
     spotlightcanvas.height= window.innerHeight;
@@ -302,16 +302,9 @@ function initIndex(context, source){
       $("#neon").css("transform", "scale("+Number(1+0.8*opacity)+","+ Number(1+0.8*opacity)+ ")");
 
       //Logic for the Spotlight Effect.
-  /*    if(opacity>0.70 && !lightsOn){
+      if(SpotlightsEnabled && opacity>0.80 && !lightsOn){
         lightsOn=true;
-        var spotlightcanvas = document.getElementById('spotlightTest');
-        for(var i = 0; i < 5; i++){
-          var red = Number(Math.random()*250).toFixed(0);
-          var green = Number(Math.random()*250).toFixed(0);
-          var blue = Number(Math.random()*250).toFixed(0);
-          spotlight(spotlightcanvas, {x:Math.random()*spotlightcanvas.width,y: Math.random()*spotlightcanvas.height},
-            {red: red, blue: blue, green: green});
-        }
+        drawNewSpotlight('spotlightcanvas',5);
 
         //$("body").css("background-image", "url("+spotlightcanvas.toDataURL()+")");
         window.setTimeout(function(){
@@ -320,7 +313,7 @@ function initIndex(context, source){
           context.clearRect(0,0,canvas.width, canvas.height);
           lightsOn= false;
         }, 400);
-      }*/
+      }
     });
     audioSystem.addListener(vis.update.bind(vis));
     audioSystem.startVis();
@@ -369,6 +362,17 @@ function initIndex(context, source){
                           "<td> "+tisch+" </td>"+
                       "</tr>"
       );
+  }
+
+  function drawNewSpotlights(canvasId, numSpotlights){
+      var spotlightcanvas = document.getElementById(canvasId);
+      for(var i = 0; i < numSpotlights; i++){
+        var red = Number(Math.random()*255).toFixed(0);
+        var green = Number(Math.random()*255).toFixed(0);
+        var blue = Number(Math.random()*255).toFixed(0);
+        spotlight(spotlightcanvas, {x:Math.random()*spotlightcanvas.width,y: Math.random()*spotlightcanvas.height},
+          {red: red, blue: blue, green: green});
+      }
   }
 </script>
 
