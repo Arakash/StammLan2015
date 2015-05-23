@@ -9,14 +9,14 @@ function spotlight(canvas, coord, color) {
   // Create gradient
   context.fillRect(0,0,canvas.width,canvas.height);
   var grd = context.createRadialGradient(
-    coord.x, coord.y,  40,
+    coord.x, coord.y,  60,
     200, -20,  20);
   grd.addColorStop(1,'rgba('+color.red+','+color.green+','+color.blue+',0.5)');
   grd.addColorStop(0.75,'rgba('+color.red+','+color.green+','+color.blue+',0)');
 
   var grd2 = context.createRadialGradient(
-    coord.x, coord.y,  35,
-    coord.x, coord.y,  33);
+    coord.x, coord.y,  55,
+    coord.x, coord.y,  53);
   grd2.addColorStop(0,'rgba('+color.red+','+color.green+','+color.blue+','+'0)');
   grd2.addColorStop(1,'rgba('+color.red+','+color.green+','+color.blue+','+'.7)');
 

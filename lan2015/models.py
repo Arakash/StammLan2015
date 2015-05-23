@@ -21,3 +21,4 @@ class Subscriber(models.Model):
     arrival = models.DateTimeField('arrival')
     departure=models.DateTimeField('departure')
     switch = models.CharField(max_length=80)
+    other = models.CharField(max_length=450)

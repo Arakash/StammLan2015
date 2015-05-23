@@ -53,6 +53,7 @@ $(function(){
             $("#rememberBox").get(0).checked = true;
         }
 
+        $("#enterButton").fadeIn(1000);
     });
 
 /*
@@ -75,7 +76,6 @@ $(function(){
     audioState="mainPage";
     console.log("entering Main Page!");
     sounds.loop.source.onended = function(){
-
         console.log("playing End sound!");
     }
 
@@ -103,6 +103,19 @@ $(function(){
 
   $("#playButton").click(function(){
       resumeAudio();
+  });
+
+  $("#neon").click(function(){
+      var red = Number(Math.random()*255).toFixed(0);
+      var green = Number(Math.random()*255).toFixed(0);
+      var blue = Number(Math.random()*255).toFixed(0);
+      $("#neon").css("color", "rgba("+red+","+green+","+blue+","+"1)");
+  });
+
+  $("#musicDisclaimer").click(function(){
+      spotlightsEnabled = !spotlightsEnabled;
+      console.log("spotlightsEnabled: " + spotlightsEnabled);
+      $(".spotlightOnOff").toggle();
   });
 
   $("#rememberBox").on("click",function(){
@@ -315,17 +328,6 @@ function initSoundSource(obj){
 
     // loop the audio?
     source.loop = obj.loop;
-/*
-    // create a gain node
-    obj.gainNode = context.createGain();
-
-
-    // set the gain (volume)
-    obj.gainNode.gain.value = obj.volume;
-
-    // connect gain node to destination
-    obj.gainNode.connect(context.destination);
-*/
 
     // connect the source to the gain node
     source.connect(gain);

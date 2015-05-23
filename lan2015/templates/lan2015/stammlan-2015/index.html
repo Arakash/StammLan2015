@@ -111,12 +111,17 @@
 
 <div style="position: relative" class="startPage">
     <canvas class="fit"></canvas>
-    <input class="flatButton" type="button" value="Enter" id="enterButton" style="z-index: 5"/>
+    <input class="flatButton" type="button" value="Enter" id="enterButton" style="z-index: 5" hidden/>
 
 </div>
 
 <div class="mainPage">
-    <p>Music: Tobu - My Own Paradise</p>
+    <!-- TOP INFORMATION LINE -->
+    <p id="musicDisclaimer" style="margin-top: 2px">
+        <a href="#">TURN <span class="spotlightOnOff">ON</span><span class="spotlightOnOff" hidden>OFF</span> SPOTLIGHTS</a>
+        Music: Tobu - My Own Paradise
+    </p>
+
     <div style="z-index: 1; height: 200px; width: 100vw">
       <canvas class="top" id="visCanvas" width="1300" height="160">
       </canvas>
@@ -125,7 +130,7 @@
           <source src="{% static 'lan2015/main/end.ogg' %}" type="audio/ogg">
       </audio>-->
     </div>
-      <canvas id="spotlightTest" width="600" height="300" style="z-index:-1; position: absolute; top:0"></canvas>
+      <canvas id="spotlightTest" width="600" height="300" style="z-index: -1; position: absolute; top:0"></canvas>
 
     <div class="frontPage">
   <!-- Box für Announcements! -->
@@ -179,12 +184,13 @@
     </div>
     </div>
 
+<!--
     <div id="navigation">
         <a href="#"> Turn Effects OFF </a>
         <a href="#"> Was wird gezockt? </a>
         <a href="#"> Essen/trinken? </a>
         <a href="#"> Is it happening? </a>
-    </div>
+    </div>-->
 </div>
 
 <div class="mediaPage">
@@ -226,7 +232,7 @@
                 <td><b> Ankunft </b></td>
                 <td><b> Abfahrt <b></td>
                 <td><b> switch</b></td>
-                <td><b> Tisch </b></td>
+                <td><b> sonstiges </b></td>
             </tr>
 
             {% if subscribers %}
@@ -236,7 +242,7 @@
                 <td> {{ s.arrival }} </td>
                 <td> {{ s.departure }} </td>
                 <td> {{ s.switch }} </td>
-                <td> - </td>
+                <td> {{ s.other }} </td>
             </tr>
             {% endfor %}
             {% endif %}
@@ -265,8 +271,9 @@ $(function(){
     {% endif %}
 })
 
-function initIndex(context, source){
+var spotlightsEnabled = false;
 
+function initIndex(context, source){
     var spotlightcanvas = document.getElementById('spotlightTest');
     spotlightcanvas.width = window.innerWidth;
     spotlightcanvas.height= window.innerHeight;
@@ -302,16 +309,11 @@ function initIndex(context, source){
       $("#neon").css("transform", "scale("+Number(1+0.8*opacity)+","+ Number(1+0.8*opacity)+ ")");
 
       //Logic for the Spotlight Effect.
-  /*    if(opacity>0.70 && !lightsOn){
+      //console.log("opacity: " + opacity + " lightsOn: " + lightsOn);
+      if(spotlightsEnabled && opacity>0.46 && !lightsOn){
         lightsOn=true;
-        var spotlightcanvas = document.getElementById('spotlightTest');
-        for(var i = 0; i < 5; i++){
-          var red = Number(Math.random()*250).toFixed(0);
-          var green = Number(Math.random()*250).toFixed(0);
-          var blue = Number(Math.random()*250).toFixed(0);
-          spotlight(spotlightcanvas, {x:Math.random()*spotlightcanvas.width,y: Math.random()*spotlightcanvas.height},
-            {red: red, blue: blue, green: green});
-        }
+        console.log("drawing new spotlight");
+        drawNewSpotlights('spotlightTest',5);
 
         //$("body").css("background-image", "url("+spotlightcanvas.toDataURL()+")");
         window.setTimeout(function(){
@@ -320,7 +322,7 @@ function initIndex(context, source){
           context.clearRect(0,0,canvas.width, canvas.height);
           lightsOn= false;
         }, 400);
-      }*/
+      }
     });
     audioSystem.addListener(vis.update.bind(vis));
     audioSystem.startVis();
@@ -369,6 +371,23 @@ function initIndex(context, source){
                           "<td> "+tisch+" </td>"+
                       "</tr>"
       );
+  }
+
+  function drawNewSpotlights(canvasId, numSpotlights){
+      var spotlightcanvas = document.getElementById(canvasId);
+      for(var i = 0; i < numSpotlights; i++){
+        var red = Number(Math.random()*255).toFixed(0);
+        var green = Number(Math.random()*255).toFixed(0);
+        var blue = Number(Math.random()*255).toFixed(0);
+
+        if(red+green+blue < 240){
+            red += Number(Math.random()*100).toFixed(0);
+            green += Number(Math.random()*100).toFixed(0);
+            blue += Number(Math.random()*100).toFixed(0);
+        }
+        spotlight(spotlightcanvas, {x:Math.random()*spotlightcanvas.width,y: Math.random()*spotlightcanvas.height},
+                                {red: red, blue: blue, green: green});
+      }
   }
 </script>
 
