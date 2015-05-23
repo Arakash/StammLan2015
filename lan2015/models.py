@@ -4,7 +4,7 @@ from django.db import models
 
 class Announcement(models.Model):
     header = models.CharField(max_length=80)
-    text = models.CharField(max_length=800)
+    text = models.TextField(max_length=800)
     pub_date = models.DateTimeField('date published')
 
     def __str__(self):
