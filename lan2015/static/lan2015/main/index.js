@@ -53,6 +53,7 @@ $(function(){
             $("#rememberBox").get(0).checked = true;
         }
 
+        $("#loadingMessage").fadeOut(1000);
         $("#enterButton").fadeIn(1000);
     });
 
@@ -176,9 +177,10 @@ $(function(){
       var subName     = $("#nameInput2").val();
       var subArrival  = $("#arrivalInput").val();
       var subDeparture= $("#departureInput").val();
-      var subSwitch   = $("#switchInput").val();
+      var subSwitch   = $("#switchInput").val()? $("#switchInput").val() : "-";
+      var subOther    = $("#sonstigesInput").val()? $("#sonstigesInput").val() : $("#sonstigesInput").attr("placeholder");
       console.log("sending new Subscriber!");
-      sendSubscriber(subName, subArrival, subDeparture, subSwitch);
+      sendSubscriber(subName, subArrival, subDeparture, subSwitch, subOther);
   });
 
   $("#arrivalInput").datepicker({
@@ -197,9 +199,9 @@ $(function(){
   });
 });
 
-function sendSubscriber(subName, subArrival, subDeparture, subSwitch){
+function sendSubscriber(subName, subArrival, subDeparture, subSwitch, subOther){
 
-    if(!subName || !subArrival || !subDeparture || !subSwitch){
+    if(!subName || !subArrival || !subDeparture || !subSwitch || !subOther){
         console.err("Arguments are not allowed to be null!");
         return false;
     }
@@ -207,7 +209,7 @@ function sendSubscriber(subName, subArrival, subDeparture, subSwitch){
     $.ajax({
         url: "sendSubscriber/",
         type: "POST",
-        data: {subName: subName, subArrival: subArrival, subDeparture: subDeparture, subSwitch: subSwitch},
+        data: {subName: subName, subArrival: subArrival, subDeparture: subDeparture, subSwitch: subSwitch, subOther: subOther},
         success: function(result){
             console.log("success!");
 
@@ -215,8 +217,9 @@ function sendSubscriber(subName, subArrival, subDeparture, subSwitch){
             subArrival  = result['subArrival'];
             subDeparture= result['subDeparture'];
             subSwitch   = result['subSwitch'];
+            subOther    = result['subOther'];
 
-            addSubscriber("#subscriberTable", subName, subArrival, subDeparture, subSwitch);
+            addSubscriber("#subscriberTable", subName, subArrival, subDeparture, subSwitch, subOther);
             return true;
         }
     })

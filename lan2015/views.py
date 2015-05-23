@@ -61,19 +61,22 @@ def sendSubscriber(request):
         subDeparture= request.POST.get('subDeparture')
         subDeparture = datetime.strptime(subDeparture, "%d.%m.%Y")
         subSwitch = request.POST.get('subSwitch')
+        subOther  = request.POST.get('subOther');
 
         s = Subscriber()
         s.name = subName
         s.arrival = subArrival
         s.departure = subDeparture
         s.switch = subSwitch
+        s.other = subOther
 
         s.save()
 
         results['subName'] = subName
-        results['subArrival'] = subArrival.__str__()
-        results['subDeparture']=subDeparture.__str__()
+        results['subArrival'] = subArrival.strftime("%d.%m.%Y")
+        results['subDeparture']=subDeparture.strftime("%d.%m.%Y")
         results['subSwitch'] = subSwitch
+        results['subOther'] = subOther
 
     j = json.dumps(results)
     return HttpResponse(j, content_type='application/json')

@@ -111,6 +111,7 @@
 
 <div style="position: relative" class="startPage">
     <canvas class="fit"></canvas>
+    <p id="loadingMessage">Site is loading. Please wait...</p>
     <input class="flatButton" type="button" value="Enter" id="enterButton" style="z-index: 5" hidden/>
 
 </div>
@@ -216,8 +217,8 @@
                 <input type="text" id="switchInput" placeholder="8port 100Mbit" class="flatInput"/>
             </fieldset>
             <fieldset>
-                <legend>Tisch:</legend>
-                <input type="text" id="tischInput" class="flatInput"/>
+                <legend>sonstiges:</legend>
+                <input type="text" id="sonstigesInput" class="flatInput" placeholder="-"/>
             </fieldset>
             <div>
                 <input id="subscriberFormSubmitButton" type="button" value="OK" class="flatButton"/>
@@ -239,8 +240,8 @@
             {% for s in subscribers %}
             <tr>
                 <td> {{ s.name }} </td>
-                <td> {{ s.arrival }} </td>
-                <td> {{ s.departure }} </td>
+                <td> {{ s.arrival | date:'d.m.Y' }} </td>
+                <td> {{ s.departure | date:'d.m.Y'}} </td>
                 <td> {{ s.switch }} </td>
                 <td> {{ s.other }} </td>
             </tr>
@@ -361,14 +362,14 @@ function initIndex(context, source){
   );
   }
 
-  function addSubscriber(parentSelector, name, arrival, departure, subSwitch,tisch){
+  function addSubscriber(parentSelector, name, arrival, departure, subSwitch, other){
       $(parentSelector).append(
                       "<tr>"+
                           "<td> "+name+" </td>"+
                           "<td> "+arrival+" </td>"+
                           "<td> "+departure+" </td>"+
                           "<td> "+subSwitch+" </td>"+
-                          "<td> "+tisch+" </td>"+
+                          "<td> "+other+" </td>"+
                       "</tr>"
       );
   }
