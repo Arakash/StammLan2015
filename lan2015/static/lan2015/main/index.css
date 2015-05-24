@@ -132,19 +132,7 @@ body{
     margin: 10px;
     width: 90vw;
     height: 56vh;
-    overflow: hidden;
-  }
-
-  #announcementBox:hover{
-      overflow-y: auto;
-  }
-
-  #announcement{
-      overflow: hidden;
-  }
-
-  #announcement:hover{
-      overflow: auto;
+    overflow: auto;
   }
 
   div#faqBox{
