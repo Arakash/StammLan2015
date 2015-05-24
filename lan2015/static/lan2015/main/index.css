@@ -138,6 +138,14 @@ body{
       overflow-y: auto;
   }
 
+  #announcement{
+      overflow: hidden;
+  }
+
+  #announcement:hover{
+      overflow: auto;
+  }
+
   div#faqBox{
       position: initial;
       left:auto;
