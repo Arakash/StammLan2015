@@ -187,15 +187,15 @@ $(function(){
       showOtherMonths: true,
       selectOtherMonths: true,
       dateFormat: "dd.mm.yy",
-      minDate: new Date(2015, 6, 11),
-      maxDate: new Date(2015, 6, 13)
+      minDate: new Date(2015, 5, 11),
+      maxDate: new Date(2015, 5, 13)
   });
   $("#departureInput").datepicker({
       showOtherMonths: true,
       selectOtherMonths: true,
       dateFormat: "dd.mm.yy",
-      minDate: new Date(2015, 6, 12),
-      maxDate: new Date(2015, 6, 15)
+      minDate: new Date(2015, 5, 12),
+      maxDate: new Date(2015, 5, 15)
   });
 });
 
